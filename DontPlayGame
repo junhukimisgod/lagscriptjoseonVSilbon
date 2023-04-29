@@ -1,0 +1,44 @@
+local tool = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool")
+
+if not tool then
+    -- 아이템을 들고 있지 않은 경우
+    local found = false
+    
+    for _, t in pairs(game.Players.LocalPlayer.Backpack:GetChildren()) do
+        if t:FindFirstChild("Core") and t.Core:FindFirstChild("Fire") then
+            -- FireCore를 가진 툴을 찾은 경우
+            game.Players.LocalPlayer.Character.Humanoid:EquipTool(t)
+            tool = t
+            found = true
+            break
+        end
+    end
+    
+    if not found then
+        print("FireCore이 있는 툴을 인벤토리에 넣어주세요.")
+    end
+end
+
+if tool then
+    local fireCore = tool:FindFirstChild("Core") and tool.Core:FindFirstChild("Fire")
+    
+    if fireCore then
+        while wait() do
+            for i=1, 100 do
+                for _, player in pairs(game.Players:GetPlayers()) do
+                    local head = player.Character and player.Character:FindFirstChild("Head")
+                    if head then
+                        local args = {
+                            [1] = head.CFrame
+                        }
+                        fireCore:FireServer(unpack(args))
+                        game:GetService("ReplicatedStorage").ServerEvents.Damage:FireServer(unpack(args))
+                        game:GetService("ReplicatedStorage").ServerEvents.Projectile:FireServer(unpack(args))
+                    end
+                end
+            end
+        end
+    else
+        print("Tool 안에 Fire Core이 없습니다.")
+    end
+end
